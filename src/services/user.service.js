@@ -37,6 +37,35 @@ class UserService {
         return null;
     }
 
+   
+      updateById(id, updatedData) {
+        const user = this.findById(id);
+        if (user) {
+            
+            Object.assign(user, updatedData);
+            return user;
+        }
+        return null; 
+    }
+
+    updateById(id, updatedData) {
+        const user = this.findById(id);
+        if (user) {
+            
+            Object.assign(user, updatedData);
+            return user;
+        }
+        return null; 
+    }
+    deleteById(id) {
+        const index = this.users.findIndex(user => user.id === id);
+        if (index !== -1) {
+            
+            return this.users.splice(index, 1)[0];
+        }
+        return null; 
+    }
+
     clear() {
         this.users = [];
         this.currentId = 1;

@@ -57,4 +57,41 @@ describe('UserController', () => {
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.send).toHaveBeenCalledWith(mockUsers);
   });
+
+  test('deleteUser debe eliminar un usuario por ID', () => {
+    const mockUsers = [
+      { id: 1, name: 'Ana' },
+      { id: 2, name: 'Luis' }
+    ];
+
+    // El usuario con ID 1 se elimina
+    const updatedUsers = [{ id: 2, name: 'Luis' }]; 
+
+    userService.deleteById.mockReturnValue(updatedUsers);
+
+    userController.deleteUser(req, res);
+
+    expect(userService.deleteById).toHaveBeenCalledWith('1'); // El ID debe ser '1'
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith(updatedUsers); // Devuelve el arreglo actualizado
+
+  });
+
+  
+  test('updateUser debe actualizar un usuario por ID', () => {
+    const mockUsers = updatedUser = { id: 1, name: 'Ana Actualizada', email: 'ana_updated@gmail.com' };
+    userService.updateById.mockReturnValue(mockUsers);
+    
+    userController.UpdateUser(req, res);
+
+    expect(userService.updateById).toHaveBeenCalled(1, {
+      name: 'Juan',
+      email: 'juan@gmail.com',
+      type: 'admin',
+      password: 'secret123'
+    });
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith(mockUsers);
+  });
+
 });
