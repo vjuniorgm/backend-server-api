@@ -58,40 +58,51 @@ describe('UserController', () => {
     expect(res.send).toHaveBeenCalledWith(mockUsers);
   });
 
-  test('deleteUser debe eliminar un usuario por ID', () => {
-    const mockUsers = [
-      { id: 1, name: 'Ana' },
-      { id: 2, name: 'Luis' }
-    ];
+test('deleteUser debe eliminar un usuario por ID', () => {
+  const req = {
+    params: {
+      id: '1', // ✅ mock del parámetro ID
+    },
+  };
 
-    // El usuario con ID 1 se elimina
-    const updatedUsers = [{ id: 2, name: 'Luis' }]; 
+  const updatedUsers = { id: 1, name: 'Ana' }; // o el valor esperado que retorna deleteById
 
-    userService.deleteById.mockReturnValue(updatedUsers);
+  userService.deleteById = jest.fn().mockReturnValue(updatedUsers);
 
-    userController.deleteUser(req, res);
+  userController.deleteUser(req, res);
 
-    expect(userService.deleteById).toHaveBeenCalledWith('1'); // El ID debe ser '1'
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.send).toHaveBeenCalledWith(updatedUsers); // Devuelve el arreglo actualizado
-
+  expect(userService.deleteById).toHaveBeenCalledWith(1); // aquí el ID es número, porque usas parseInt en el controller
+  expect(res.status).toHaveBeenCalledWith(200);
+  expect(res.send).toHaveBeenCalledWith({
+    message: "Usuario eliminado exitosamente",
+    user: updatedUsers,
   });
+});
 
   
   test('updateUser debe actualizar un usuario por ID', () => {
-    const mockUsers = updatedUser = { id: 1, name: 'Ana Actualizada', email: 'ana_updated@gmail.com' };
-    userService.updateById.mockReturnValue(mockUsers);
-    
-    userController.UpdateUser(req, res);
-
-    expect(userService.updateById).toHaveBeenCalled(1, {
+  const req = {
+    params: {
+      id: '1', // El ID como string, será convertido a número en el controller
+    },
+    body: {
       name: 'Juan',
-      email: 'juan@gmail.com',
+      email: 'juan@example.com',
       type: 'admin',
       password: 'secret123'
-    });
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.send).toHaveBeenCalledWith(mockUsers);
+    }
+  };
+
+  const updatedUser = { id: 1, ...req.body };
+
+  userService.updateById = jest.fn().mockReturnValue(updatedUser);
+
+  userController.UpdateUser(req, res);
+
+  expect(userService.updateById).toHaveBeenCalledWith(1, req.body); // ✅ ID y datos
+  expect(res.status).toHaveBeenCalledWith(200);
+  expect(res.send).toHaveBeenCalledWith(updatedUser); // ✅ Usuario actualizado
+
   });
 
 });
